@@ -14,8 +14,8 @@
 	<packaging>pom</packaging>
 	<dependencies>
 		<dependency>
-			<groupId>org.oiue.tools</groupId>
-			<artifactId>org.oiue.tools</artifactId>
+			<groupId>org.oiue</groupId>
+			<artifactId>tools</artifactId>
 			<version>1.0.0</version>
 		</dependency>
 		<dependency>
