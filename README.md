@@ -1,914 +1,378 @@
-OIUE
+OIUE是一套完全解耦的服务化平台
 =======
-
-#Open Intelligent Unitive Efficient
-##开放 智能 统一 高效
-题外话：
-
-	不知道你有没有修改开源项目的经历，好比在一锅乱炖里去捞所有的白菜，很多时候，需要把一锅都翻遍才能找出所有的白菜叶，我们希望倡导一种方式，完全遵循解耦的架构，从根本去解决这种一锅乱炖的局面。
-	
-	OIUE 开源的目的是推进轻量化、标准化、架构解耦、模块化以及去框架化，框架立足将模块切分最小粒度，确保每个模块均可单独替换、并最小限度模块依赖，开发者无需培训即可快速入手，亦不用关心底层架构、分布式服务调用及服务治理等相关繁琐复杂的实现。1.0版本框架采用了OSGI的底层容器，部分遵循OSGI标准，但模块Activator请严格遵循本项目，后续将推出多个版本的启动容器，以满足不同场景下业务需求，同时也欢迎有兴趣的朋友共同加入与探讨。
-	
-	作为程序开发人员，每天都在重复同样的工作，浪费了大量时间，严重影响了开发热情，简单而又重复的工作占用了我们太多的时间。程序语言由低级逐渐走向高级，出现了许多控件及框架，Java中spring等是很不错的框架，其应用广泛程度难有出其右者，但极其庞大的体系结构让人望而却步，笨重而又耦合的模块体系是在让人无法恭维，强制的调用及结构已经改变了语言原本的色彩，其本质并未从根本上解决程序开发中大量的重复工作，我们希望有一个工具或者一套设计，能够按照我们所习惯的操作模式，最大程度的复用、更高程度的解耦，延续一些开发偏好，以及更大的灵活性，不约定俗成的满足我们的开发需求，开放、智能、统一、高效，本软件框架构想由此应运而生。
-	
-	许多人会好奇为什么选择OSGI作运行容器，“OSGI架构师的天堂”这句话并不足以概括初衷，最重要的是，OSGI优秀的模块化结构，要求我们更加严谨，同时也让我们更加重视对封装、模块化的理解，模块应该尽可能减少对外界的依赖除非逼不得已，我见过太多原本应该最小实现却引用一大堆附加无用的功能的工具包，这里不一一列举，无力吐槽、仁者见仁智者见智吧，筑建一个开放、严谨、高效的开发群体，是本架构的初衷之一。
-		
-	
-	从未见过哪个男人跟女生吵架能吵赢的，不是气急败坏地动起了手，就是沉默以对。这仅仅是男人的问题吗？达尔文说：“以前也有吵赢的，后来他们都找不到女朋友，于是灭绝了。”
-	
-	我们不希望出现类似与上面的故事，从前有一群很刻苦的人，由于没有时间恋爱，后来灭绝了！
-
-下载主工程OIUE，修改oiue.sh内jre及工程目录，运行即可启动项目，开源库中提供了部分开放服务，可快捷搭建自己的各类应用服务。
-
-**开源库及服务说明如下：**
-
-开源库名称|描述
----|---
-OIUE主工程（服务启动容器felix）|https://github.com/OIUE/OIUE
-OIUE基于OSGI打包配置|https://github.com/OIUE/OIUE-CONFIGURATOR
-OIUE核心服务（容器隔离及核心服务定义）|https://github.com/OIUE/OIUE-CORE
-OIUE核心服务实现|https://github.com/OIUE/OIUE-BASE
-OIUE基于jdbc事物封装|https://github.com/OIUE/OIUE-ODPS
-OIUE开放服务|https://github.com/OIUE/OIUE-SERVICES
-
-服务名称|纯接口|bundle
----|---|---
-Action服务定义|Y|org.oiue.service.action.api-1.0.0.jar
-Action调度服务实现|N|org.oiue.service.action.base-1.0.0.jar
-ActionFilter认证服务|N|org.oiue.service.action.filter.auth-1.0.0.jar
-免登陆调试服务|N|org.oiue.service.action.filter.auth.debug-1.0.0.jar
-Action服务HTTP方式访问实现OLD|N|org.oiue.service.action.http.action-1.0.0.jar
-HTTP图片验证码服务|N|org.oiue.service.action.http.imageCode-1.0.0.jar
-Action服务HTTp方式访问实现NEW|N|org.oiue.service.action.http.services-1.0.0.jar
-HTTP文件上传服务|N|org.oiue.service.action.http.upload-1.0.0.jar
-Action服务TCP方式JSON访问实现|N|org.oiue.service.action.tcp.action-1.0.0.jar
-Action服务TCP方式流访问实现|N|org.oiue.service.action.tcp.bytes-1.0.0.jar
-认证服务定义|Y|org.oiue.service.auth-1.0.0.jar
-认证调度服务实现|N|org.oiue.service.auth.impl-1.0.0.jar
-本地认证服务实现(直接查jdbc库)|N|org.oiue.service.auth.local-1.0.0.jar
-自定义缓存定义|Y|org.oiue.service.buffer-1.0.0.jar
-自定义缓存实现|N|org.oiue.service.buffer.impl-1.0.0.jar
-自定义缓存同步服务|N|org.oiue.service.buffer.synchronization.db-1.0.0.jar
-流数据编解码处理服务定义|Y|org.oiue.service.bytes.api-1.0.0.jar
-流数据编解码调度处理服务实现|N|org.oiue.service.bytes.base-1.0.0.jar
-数据流编解码|N|org.oiue.service.bytes.bytes-1.0.0.jar
-整形数据编解码|N|org.oiue.service.bytes.int16-1.0.0.jar
-字符串编解码|N|org.oiue.service.bytes.string-1.0.0.jar
-缓存服务定义|Y|org.oiue.service.cache-1.0.0.jar
-自定义缓存实现|N|org.oiue.service.cache.buffer-1.0.0.jar
-缓存调度实现|N|org.oiue.service.cache.impl-1.0.0.jar
-混存redis封装|N|org.oiue.service.cache.jedis-1.0.0.jar
-混存脚本操作|N|org.oiue.service.cache.script-1.0.0.jar
-树状结构缓存定义|Y|org.oiue.service.cache.tree-1.0.0.jar
-树状缓存脚本操作|N|org.oiue.service.cache.tree.script-1.0.0.jar
-树状缓存zookeeper封装|N|org.oiue.service.cache.tree.zookeeper.curator-1.0.0.jar
-缓存调试服务|N|org.oiue.service.debug.cache-1.0.0.jar
-Http客户端调试服务|N|org.oiue.service.debug.httpclient-1.0.0.jar
-资源操作调试服务|N|org.oiue.service.debug.res-1.0.0.jar
-树状缓存调试服务|N|org.oiue.service.debug.treecache-1.0.0.jar
-数据接入总线服务定义|Y|org.oiue.service.driver.api-1.0.0.jar
-数据接入总线调度实现|N|org.oiue.service.driver.base-1.0.0.jar
-数据总线过滤实现|N|org.oiue.service.driver.filter.impl-1.0.0.jar
-数据总线订阅实现|N|org.oiue.service.driver.listener.impl-1.0.0.jar
-数据总线存储实现|N|org.oiue.service.driver.listener.storage-1.0.0.jar
-事件执行服务定义|Y|org.oiue.service.event.execute-1.0.0.jar
-事件执行服务实现|N|org.oiue.service.event.execute.impl-1.0.0.jar
-获取系统时间事件定义|Y|org.oiue.service.event.system.time-1.0.0.jar
-获取系统时间事件实现|N|org.oiue.service.event.system.time.impl-1.0.0.jar
-文件上传服务定义|Y|org.oiue.service.file.upload-1.0.0.jar
-文件上传服务实现|N|org.oiue.service.file.upload.impl-1.0.0.jar
-HTTP客户端服务定义|Y|org.oiue.service.http.client-1.0.0.jar
-apacheHttp客户端封装|N|org.oiue.service.http.client.apache-1.0.0.jar
-日志服务定义|Y|org.oiue.service.log-1.0.0.jar
-日志Log4j封装|N|org.oiue.service.log4j-1.0.0.jar
-消息服务定义|Y|org.oiue.service.message-1.0.0.jar
-消息服务实现|N|org.oiue.service.message.impl-1.0.0.jar
-JDBC事务基础服务|N|org.oiue.service.odp.base-1.0.0.jar
-H2持久层底层公共方法定义|N|org.oiue.service.odp.dmo.h2-1.0.0.jar
-Mysql持久层底层公共方法定义|N|org.oiue.service.odp.dmo.mysql-1.0.0.jar
-Neo4j持久层底层公共方法定义|N|org.oiue.service.odp.dmo.neo4j-1.0.0.jar
-Postgresql持久层底层公共方法定义|N|org.oiue.service.odp.dmo.postgresql-1.0.0.jar
-数据操作事件定义|Y|org.oiue.service.odp.event.api-1.0.0.jar
-数据操作事件Mysql实现|N|org.oiue.service.odp.event.dmo.mysql-1.0.0.jar
-数据操作事件Mysql查询实现|N|org.oiue.service.odp.event.dmo.mysql.q-1.0.0.jar
-数据操作事件Mysql单条查询实现|N|org.oiue.service.odp.event.dmo.mysql.select-1.0.0.jar
-数据操作事件Mysql多条查询实现|N|org.oiue.service.odp.event.dmo.mysql.selects-1.0.0.jar
-数据操作事件Mysql查询事件转换实现|N|org.oiue.service.odp.event.dmo.mysql.t-1.0.0.jar
-数据操作事件Neo4j实现|N|org.oiue.service.odp.event.dmo.neo4j-1.0.0.jar
-数据操作事件Neo4j插入实现|N|org.oiue.service.odp.event.dmo.neo4j.insert-1.0.0.jar
-数据操作事件Postgresql实现|N|org.oiue.service.odp.event.dmo.postgresql-1.0.0.jar
-数据操作事件Postgresql查询实现|N|org.oiue.service.odp.event.dmo.postgresql.q-1.0.0.jar
-数据操作事件Postgresql查询实现|N|org.oiue.service.odp.event.dmo.postgresql.query-1.0.0.jar
-数据操作事件Postgresql查询实现|N|org.oiue.service.odp.event.dmo.postgresql.selects-1.0.0.jar
-事件sql处理定义|Y|org.oiue.service.odp.event.sql.structure-1.0.0.jar
-事件sql处理实现|N|org.oiue.service.odp.event.sql.structure.impl-1.0.0.jar
-资源操作服务定义|Y|org.oiue.service.odp.res.api-1.0.0.jar
-资源操作服务业务实现|N|org.oiue.service.odp.res.base-1.0.0.jar
-资源操作持久层定义|Y|org.oiue.service.odp.res.dmo-1.0.0.jar
-H2资源操作持久层实现|N|org.oiue.service.odp.res.dmo.h2-1.0.0.jar
-Mysql资源操作持久层实现|N|org.oiue.service.odp.res.dmo.mysql-1.0.0.jar
-Neo4j资源操作持久层实现|N|org.oiue.service.odp.res.dmo.neo4j-1.0.0.jar
-sql处理定义|Y|org.oiue.service.odp.structure-1.0.0.jar
-sql处理实现|N|org.oiue.service.odp.structure.impl-1.0.0.jar
-查询sql处理实现|N|org.oiue.service.odp.structure.selectsql-1.0.0.jar
-在线维护服务定义|Y|org.oiue.service.online-1.0.0.jar
-在线维护服务实现|N|org.oiue.service.online.impl-1.0.0.jar
-启动容器隔离封装服务（基于OSGI）|N|org.oiue.service.osgi.rpc-1.0.0.jar
-权限校验服务定义|Y|org.oiue.service.permission-1.0.0.jar
-权限校验调度服务实现|N|org.oiue.service.permission.impl-1.0.0.jar
-访问鉴权及转换服务|N|org.oiue.service.permission.verify-1.0.0.jar
-JDBC连接池定义|Y|org.oiue.service.sql-1.0.0.jar
-Apache的JDBC连接池封装|N|org.oiue.service.sql.apache-1.0.0.jar
-系统分析服务定义|Y|org.oiue.service.system.analyzer-1.0.0.jar
-系统分析服务实现|N|org.oiue.service.system.analyzer.impl-1.0.0.jar
-定时任务调度服务定义|Y|org.oiue.service.task-1.0.0.jar
-定时任务调度|N|org.oiue.service.task.quartz-1.0.0.jar
-TCP/UDP服务定义|Y|org.oiue.service.tcp-1.0.0.jar
-Mina封装|N|org.oiue.service.tcp.mina-1.0.0.jar
-模板定义|Y|org.oiue.service.template.api-1.0.0.jar
-模板管理服务实现|N|org.oiue.service.template.base-1.0.0.jar
-beetl封装|N|org.oiue.service.template.beetl-1.0.0.jar
-velocity封装|N|org.oiue.service.template.velocity-1.0.0.jar
-线程池定义|Y|org.oiue.service.threadpool-1.0.0.jar
-线程池实现|N|org.oiue.service.threadpool.impl-1.0.0.jar
-工具包|N|org.oiue.tools-1.0.0.jar
-
-
-
-**一个典型的服务Activator如下：**
+Open Intelligent Unitive Efficient [开放 智能 统一 高效]
+**低门槛、轻量化、标准化、架构解耦、模块化以及去框架化**
+##项目交流吐槽
 
 ```
-package org.oiue.service.action.http.action;
+QQ群：10939695  作者：Every、马航军等
+敬请参与 联系我们：team@oiue.org 
+提议吐槽：https://issues.sonatype.org/browse/OSSRH-23545
+```
+[入门指导](../../#入门指导)
+
+[现有服务通信协议约定](../../#现有服务通信协议约定)
+
+[相关开源库](../../#相关开源库)
+
+[相关服务](../../#相关开源库)
+
+======
+题外话：
+
+`	不知道你有没有修改开源项目的经历，好比在一锅乱炖里去捞所有的白菜，很多时候，需要把一锅都翻遍才能找出所有的白菜叶，我们希望倡导一种方式，完全遵循解耦的架构，从根本去解决这种一锅乱炖的局面。`
+	
+`	OIUE 开源的目的是为了降低入门门槛，推进轻量化、标准化、架构解耦、模块化以及去框架化，框架立足将模块切分最小粒度，确保每个模块均可单独替换、并最小限度模块依赖，开发者无需培训即可快速入手，亦不用关心底层架构、分布式服务调用及服务治理等相关繁琐复杂的实现。1.0版本框架采用了OSGI的底层容器，部分遵循OSGI标准，但模块Activator请严格遵循本项目，后续将推出多个版本的启动容器，以满足不同场景下业务需求，同时也欢迎有兴趣的朋友共同加入与探讨。`
+	
+`	作为程序开发人员，每天都在重复同样的工作，浪费了大量时间，严重影响了开发热情，简单而又重复的工作占用了我们太多的时间。程序语言由低级逐渐走向高级，出现了许多控件及框架，Java中spring等是很不错的框架，其应用广泛程度难有出其右者，但极其庞大的体系结构让人望而却步，笨重而又耦合的模块体系是在让人无法恭维，强制的调用及结构已经改变了语言原本的色彩，其本质并未从根本上解决程序开发中大量的重复工作，我们希望有一个工具或者一套设计，能够按照我们所习惯的操作模式，最大程度的复用、更高程度的解耦，延续一些开发偏好，以及更大的灵活性，不约定俗成的满足我们的开发需求，开放、智能、统一、高效，本软件框架构想由此应运而生。`
+	
+`	许多人会好奇为什么选择OSGI作运行容器，“OSGI架构师的天堂”这句话并不足以概括初衷，最重要的是，OSGI优秀的模块化结构，要求我们更加严谨，同时也让我们更加重视对封装、模块化的理解，模块应该尽可能减少对外界的依赖除非逼不得已，我见过太多原本应该最小实现却引用一大堆附加无用的功能的工具包，这里不一一列举，无力吐槽、仁者见仁智者见智吧，筑建一个开放、严谨、高效的开发群体，是本架构的初衷之一。`
+		
+	
+`	从未见过哪个男人跟女生吵架能吵赢的，不是气急败坏地动起了手，就是沉默以对。这仅仅是男人的问题吗？达尔文说：“以前也有吵赢的，后来他们都找不到女朋友，于是灭绝了。”
+	我们不希望出现类似与上面的故事，从前有一群很刻苦的人，由于没有时间恋爱，后来灭绝了！`
+
+#入门指导
+
+
+下载OIUE主工程，
+https://github.com/OIUE/OIUE
+http://git.oschina.net/every.oschina.net/OIUE
+
+工程结构如下：
+
+```
+├── LICENSE
+├── README.md
+├── conf
+│   ├── config.properties
+│   └── org
+│       ├── apache
+│       │   └── felix
+│       │       └── webconsole
+│       │           └── internal
+│       │               └── servlet
+│       │                   └── OsgiManager.config
+│       └── oiue
+│           └── service
+│               ├── action
+│               │   ├── filter
+│               │   │   └── auth
+│               │   │       └── Activator.config
+│               │   ├── http
+│               │   │   ├── action
+│               │   │   │   └── Activator.config
+│               │   │   ├── managed
+│               │   │   ├── services
+│               │   │   │   └── Activator.config
+│               │   │   └── upload
+│               │   │       └── Activator.config
+│               │   └── tcp
+│               │       ├── action
+│               │       │   └── Activator.config
+│               │       └── bytes
+│               │           └── Activator.config
+│               ├── auth
+│               │   └── local
+│               │       └── Activator.config
+│               ├── buffer
+│               │   └── synchronization
+│               │       └── db
+│               │           └── Activator.config
+│               ├── cache
+│               │   ├── impl
+│               │   │   └── Activator.config
+│               │   ├── jedis
+│               │   │   └── Activator.config
+│               │   └── tree
+│               │       └── zookeeper
+│               │           └── curator
+│               │               └── Activator.config
+│               ├── debug
+│               │   ├── cache
+│               │   │   └── Activator.config
+│               │   └── treecache
+│               │       └── Activator.config
+│               ├── driver
+│               │   └── listener
+│               │       └── storage
+│               │           └── Activator.config
+│               ├── log4j
+│               │   └── Activator.config
+│               ├── message
+│               │   └── impl
+│               │       └── Activator.config
+│               ├── odp
+│               │   └── res
+│               │       └── base
+│               │           └── Activator.config
+│               ├── online
+│               │   └── impl
+│               │       └── Activator.config
+│               ├── osgi
+│               │   └── rpc
+│               │       └── Activator.config
+│               ├── permission
+│               │   ├── impl
+│               │   │   └── Activator.config
+│               │   └── verify
+│               │       └── Activator.config
+│               ├── sql
+│               │   └── apache
+│               │       └── Activator.config
+│               ├── system
+│               │   └── analyzer
+│               │       └── impl
+│               │           └── Activator.config
+│               └── template
+│                   └── beetl
+│                       └── Activator.config
+├── oiue.sh
+└── pom.xml
+```
+其中 
+conf是各服务的配置文件
+
+执行`mvn install`
+修改oiue.sh中jre及工程的目录
+修改conf\org\oiue\service\sql\apache\Activator.config 连接自己的数据库
+执行`./oiue.sh start`启动服务
+
+
+`开源库中提供了部分开放服务，可快捷搭建自己的各类应用服务。`
+
+**创建自己的服务**[以实现登录认证为例]
+创建Meavn项目，
+
+```
+├── pom.xml
+└── src
+    └── main
+        └── java
+            └── org
+                └── oiue
+                    └── service
+                        └── auth
+                            └── local
+                                ├── Activator.java
+                                └── AuthLocalServiceImpl.java
+```
+登录认证依赖于日志服务（父工程已经引用）、认证服务、数据查询服务，配置如下：
+
+```
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<artifactId>org.oiue.service.auth.local</artifactId>
+	<packaging>bundle</packaging>
+
+	<name>OIUE service for auth impl by local </name>
+	<description>A bundle that Auth service by local </description>
+	<parent>
+		<groupId>org.oiue.services</groupId>
+		<artifactId>services</artifactId>
+		<version>1.0.0</version>
+	</parent>
+
+	<dependencies>
+		<dependency>
+			<groupId>org.oiue.services</groupId>
+			<artifactId>org.oiue.service.auth</artifactId>
+			<version>1.0.0</version>
+		</dependency>
+		<dependency>
+			<groupId>org.oiue.services.odps</groupId>
+			<artifactId>org.oiue.service.odp.res.api</artifactId>
+			<version>1.0.0</version>
+		</dependency>
+	</dependencies>
+	<properties>
+		<project.activator>${artifactId}.Activator</project.activator>
+	</properties>
+</project>
+```
+服务初始化时传入依赖的服务，从配置中读取事件ID，以及客户端传递过来的用户名密码结构路径、此认证服务的名称。
+如客户端用户认证信息如下：
+
+```
+{
+    "modulename": "login",
+    "tag": "exttag",
+    "operation": "login",
+    "data": {
+        "type": "local",
+        “userName”: “name”,
+        “userPass”: “passwd”
+    }
+}
+```
+
+服务的配置文件在主工程的conf目录下，
+配置文件如下：
+
+```
+service.pid="org.oiue.service.auth.local.Activator"
+login.local.auth.eventId="fm_system_service_auth_user"
+login.sso.type="local"
+login.local.key.name="userName"
+login.local.key.pass="userPass"
+```
+则服务代码实现如下：
+
+```
+package org.oiue.service.auth.local;
+
+import java.io.Serializable;
+import java.util.Dictionary;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
+
+import org.oiue.service.auth.AuthService;
+import org.oiue.service.auth.AuthServiceManager;
+import org.oiue.service.log.LogService;
+import org.oiue.service.log.Logger;
+import org.oiue.service.odp.base.FactoryService;
+import org.oiue.service.odp.res.api.IResource;
+import org.oiue.service.online.Online;
+import org.oiue.service.online.OnlineImpl;
+import org.oiue.service.online.Type;
+import org.oiue.tools.string.StringUtil;
+
+@SuppressWarnings({ "unchecked", "rawtypes" })
+public class AuthLocalServiceImpl implements AuthService, Serializable {
+    private static final long serialVersionUID = -3485450639722467031L;
+    private Logger logger;
+    private String event_id;
+    private FactoryService factoryService;
+    private AuthServiceManager authServiceManager;
+    private String type = "local";
+    private String name = "userName";
+    private String pass = "userPass";
+
+    public AuthLocalServiceImpl(LogService logService, FactoryService iresource, AuthServiceManager authServiceManager) {
+        logger = logService.getLogger(this.getClass().getName());
+        this.factoryService = iresource;
+        this.authServiceManager = authServiceManager;
+    }
+
+    public void updated(Dictionary dict) {
+        try {
+            event_id = (String) dict.get("login.local.auth.eventId");
+            name = (String) dict.get("login.local.key.name");
+            pass = (String) dict.get("login.local.key.pass");
+            String type = (String) dict.get("login.sso.type");
+            if (!StringUtil.isEmptys(type) && !type.equals(this.type)) {
+                authServiceManager.unRegisterAuthService(this.type);
+                this.type = type;
+            }
+            authServiceManager.registerAuthService(type, this);
+        } catch (Throwable e) {
+            logger.error("config is error :" + dict, e);
+        }
+    }
+
+    @Override
+    public void unregister() {
+        authServiceManager.unRegisterAuthService(type);
+    }
+
+    @Override
+    public Online login(Map per) {
+        String username = (String) per.remove(name);
+        String password = (String) per.remove(pass);
+        String tokenId = null;
+        Online online = new OnlineImpl();
+        if (!StringUtil.isEmptys(username) && !StringUtil.isEmptys(password)) {
+            Map<String, Object> map = new HashMap<>();
+            map.put("origin_name", type);
+            map.put("user_name", username);
+            map.put("password", password);
+            try {
+                IResource iResource = factoryService.getBmo(IResource.class.getName());
+                map = (Map<String, Object>) iResource.callEvent(event_id, null, map);
+                if (map == null || map.size() == 0) {
+                    throw new RuntimeException("login error,username or password is error!");
+                }
+            } catch (Throwable e) {
+                throw new RuntimeException(e);
+            }
+            tokenId = UUID.randomUUID().toString().replaceAll("-", "");
+            online.setO(new ConcurrentHashMap<>());
+            online.setToken(tokenId);
+            online.setType(Type.http);
+            online.setUser(map);
+            online.setUser_id(map.get("user_id") + "");
+            online.setUser_name(map.get("user_name") + "");
+        }
+        return online;
+    }
+
+    @Override
+    public boolean logout(Map per) {
+        return false;
+    }
+
+}
+```
+
+**服务注册Activator如下：**
+
+```
+package org.oiue.service.auth.local;
 
 import java.util.Dictionary;
 
-import org.oiue.service.action.api.ActionService;
+import org.oiue.service.auth.AuthService;
+import org.oiue.service.auth.AuthServiceManager;
 import org.oiue.service.log.LogService;
-import org.oiue.service.log.Logger;
+import org.oiue.service.odp.base.FactoryService;
+import org.oiue.service.odp.res.api.IResource;
 import org.oiue.service.osgi.FrameActivator;
 import org.oiue.service.osgi.MulitServiceTrackerCustomizer;
-import org.osgi.service.http.HttpService;
 
 public class Activator extends FrameActivator {
 
     @Override
     public void start() throws Exception {
         this.start(new MulitServiceTrackerCustomizer() {
-            private String url = getProperty("org.oiue.service.action.http.root") + "/action";
-            private HttpService httpService;
-            private PostServlet posServlet;
+            AuthLocalServiceImpl authService;
 
             @Override
             public void removedService() {
-                httpService.unregister(url);
+            	authService.unregister();
             }
 
+            @SuppressWarnings("unused")
             @Override
             public void addingService() {
-                httpService = getService(HttpService.class);
                 LogService logService = getService(LogService.class);
-                ActionService actionService = getService(ActionService.class);
+                FactoryService factoryService = getService(FactoryService.class);
+                AuthServiceManager authServiceManager = getService(AuthServiceManager.class);
+                IResource iResource = getService(IResource.class);
 
-                posServlet = new PostServlet(actionService, logService);
-                Logger log = logService.getLogger(this.getClass());
-                if (log.isInfoEnabled()) {
-                	log.info("绑定url：" + url);
-				}
-                try {
-                    httpService.registerServlet(url, posServlet, null, null);
-                } catch (Exception e) {
-                    log.error(e.getMessage(), e);
-                }
+                authService = new AuthLocalServiceImpl(logService, factoryService, authServiceManager);
+
+                registerService(AuthService.class, authService);
             }
 
             @Override
             public void updated(Dictionary<String, ?> props) {
-                posServlet.updated(props);
+                authService.updated(props);
             }
-        }, HttpService.class, ActionService.class, LogService.class);
+        }, LogService.class, AuthServiceManager.class, FactoryService.class,IResource.class);
     }
 
     @Override
     public void stop() throws Exception {}
 }
 ```
-一个典型的Main工程Meavn实例如下：
+ `public final void start(MulitServiceTrackerCustomizer mstc, Class... cs)`中cs为依赖的服务，通过getService获取服务实例。
+ 
+OIUE1.0采用Mysql作为主数据库，数据库操作相关服务均以此为基础，数据库设计如下：
+![DB](OIUE_DB.png)
 
-```
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-	<modelVersion>4.0.0</modelVersion>
-	<packaging>pom</packaging>
-	<name>Main</name>
-	<groupId>org.oiue</groupId>
-	<artifactId>main</artifactId>
-	<version>1.0.0</version>
-	<dependencies>
-		<dependency>
-			<groupId>${felix.groupId}</groupId>
-			<artifactId>org.apache.felix.main</artifactId>
-			<version>5.6.0</version>
-		</dependency>
-	</dependencies>
-	<properties>
-		<felix.groupId>org.apache.felix</felix.groupId>
-		<obr.version>2.0.8</obr.version>
-		<conf.version>1.8.8</conf.version>
-		<http.servlet.api.version>1.1.2</http.servlet.api.version>
-		<http.api.version>3.0.0</http.api.version>
-		<log.version>1.0.1</log.version>
-		<http.base.version>3.0.8</http.base.version>
-		<jetty.version>3.1.2</jetty.version>
-		<eventadmin.version>1.4.4</eventadmin.version>
-		<webconsole.version>4.2.16</webconsole.version>
-		<threaddump.version>1.0.0</threaddump.version>
-		<oiue.groupId>org.oiue.services</oiue.groupId>
-		<rpc.version>1.0.0</rpc.version>
-		<oiue.version>1.0.0</oiue.version>
-	</properties>
-	<build>
-		<plugins>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-dependency-plugin</artifactId>
-				<executions>
-					<execution>
-						<id>copy-dependencies</id>
-						<phase>initialize</phase>
-						<goals>
-							<goal>copy-dependencies</goal>
-						</goals>
-						<configuration>
-							<outputDirectory>${project.basedir}/lib</outputDirectory>
-							<overWriteReleases>false</overWriteReleases>
-							<overWriteSnapshots>false</overWriteSnapshots>
-							<overWriteIfNewer>true</overWriteIfNewer>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-dependency-plugin</artifactId>
-				<executions>
-					<execution>
-						<id>copy</id>
-						<phase>package</phase>
-						<goals>
-							<goal>copy</goal>
-						</goals>
-						<configuration>
-							<artifactItems>
-								<artifactItem>
-									<groupId>${felix.groupId}</groupId>
-									<artifactId>org.apache.felix.bundlerepository</artifactId>
-									<version>${obr.version}</version>
-									<type>jar</type>
-									<overWrite>true</overWrite>
-									<outputDirectory>${project.basedir}/bundle</outputDirectory>
-								</artifactItem>
-								<artifactItem>
-									<groupId>${felix.groupId}</groupId>
-									<artifactId>org.apache.felix.configadmin</artifactId>
-									<version>${conf.version}</version>
-									<type>jar</type>
-									<overWrite>true</overWrite>
-									<outputDirectory>${project.basedir}/bundle</outputDirectory>
-								</artifactItem>
-								<artifactItem>
-									<groupId>${felix.groupId}</groupId>
-									<artifactId>org.apache.felix.webconsole</artifactId>
-									<version>${webconsole.version}</version>
-									<type>jar</type>
-									<overWrite>true</overWrite>
-									<outputDirectory>${project.basedir}/bundle</outputDirectory>
-								</artifactItem>
-								<artifactItem>
-									<groupId>${felix.groupId}</groupId>
-									<artifactId>org.apache.felix.threaddump</artifactId>
-									<version>${threaddump.version}</version>
-									<type>jar</type>
-									<overWrite>true</overWrite>
-									<outputDirectory>${project.basedir}/bundle</outputDirectory>
-								</artifactItem>
-
-								<artifactItem>
-									<groupId>org.oiue</groupId>
-									<artifactId>tools</artifactId>
-									<version>${rpc.version}</version>
-									<type>jar</type>
-									<overWrite>true</overWrite>
-									<outputDirectory>${project.basedir}/bundle</outputDirectory>
-								</artifactItem>
-
-								<!--http://git.oschina.net/every.oschina.net/OIUE/blob/master/conf/org/oiue/service/osgi/rpc/Activator.config?dir=0&filepath=conf%2Forg%2Foiue%2Fservice%2Fosgi%2Frpc%2FActivator.config&oid=b4936393daf0fcae071facca5582a143c83fae35&sha=dde2dfae5c8b802e6d53f26186c2682eba29439b-->
-								<!--https://github.com/OIUE/OIUE/blob/master/conf/org/oiue/service/osgi/rpc/Activator.config-->
-								<artifactItem>
-									<groupId>${oiue.groupId}</groupId>
-									<artifactId>org.oiue.service.osgi.rpc</artifactId>
-									<version>${rpc.version}</version>
-									<type>jar</type>
-									<overWrite>true</overWrite>
-									<outputDirectory>${project.basedir}/bundle</outputDirectory>
-								</artifactItem>
-								<artifactItem>
-									<groupId>${oiue.groupId}</groupId>
-									<artifactId>org.oiue.service.cache.tree</artifactId>
-									<version>${oiue.version}</version>
-									<type>jar</type>
-									<overWrite>true</overWrite>
-									<outputDirectory>${project.basedir}/bundle</outputDirectory>
-								</artifactItem>
-								<artifactItem>
-									<groupId>${oiue.groupId}</groupId>
-									<artifactId>org.oiue.service.log</artifactId>
-									<version>${oiue.version}</version>
-									<type>jar</type>
-									<overWrite>true</overWrite>
-									<outputDirectory>${project.basedir}/bundle</outputDirectory>
-								</artifactItem>
-								<artifactItem>
-									<groupId>${oiue.groupId}</groupId>
-									<artifactId>org.oiue.service.system.analyzer</artifactId>
-									<version>${oiue.version}</version>
-									<type>jar</type>
-									<overWrite>true</overWrite>
-									<outputDirectory>${project.basedir}/bundle</outputDirectory>
-								</artifactItem>
-								<!--http://git.oschina.net/every.oschina.net/OIUE/blob/master/conf/org/oiue/service/cache/tree/zookeeper/curator/Activator.config?dir=0&filepath=conf%2Forg%2Foiue%2Fservice%2Fcache%2Ftree%2Fzookeeper%2Fcurator%2FActivator.config&oid=14ef50b79711019c20901e21d1e4dec05b32205d&sha=dde2dfae5c8b802e6d53f26186c2682eba29439b-->
-								<!--https://github.com/OIUE/OIUE/blob/master/conf/org/oiue/service/cache/tree/zookeeper/curator/Activator.config-->
-								<artifactItem>
-									<groupId>${oiue.groupId}</groupId>
-									<artifactId>org.oiue.service.cache.tree.zookeeper.curator</artifactId>
-									<version>${oiue.version}</version>
-									<type>jar</type>
-									<overWrite>true</overWrite>
-									<outputDirectory>${project.basedir}/bundle</outputDirectory>
-								</artifactItem>
-								<!--http://git.oschina.net/every.oschina.net/OIUE/blob/master/conf/org/oiue/service/log4j/Activator.config?dir=0&filepath=conf%2Forg%2Foiue%2Fservice%2Flog4j%2FActivator.config&oid=22a413a2982e247e8be25bda2e85c1fedf8953e1&sha=dde2dfae5c8b802e6d53f26186c2682eba29439b-->
-								<!--https://github.com/OIUE/OIUE/blob/master/conf/org/oiue/service/log4j/Activator.config-->
-								<artifactItem>
-									<groupId>${oiue.groupId}</groupId>
-									<artifactId>org.oiue.service.log4j</artifactId>
-									<version>${oiue.version}</version>
-									<type>jar</type>
-									<overWrite>true</overWrite>
-									<outputDirectory>${project.basedir}/bundle</outputDirectory>
-								</artifactItem>
-								<artifactItem>
-									<groupId>${oiue.groupId}</groupId>
-									<artifactId>org.oiue.service.system.analyzer.impl</artifactId>
-									<version>${oiue.version}</version>
-									<type>jar</type>
-									<overWrite>true</overWrite>
-									<outputDirectory>${project.basedir}/bundle</outputDirectory>
-								</artifactItem>
-								
-								<artifactItem>
-									<groupId>${oiue.groupId}</groupId>
-									<artifactId>org.oiue.service.sql</artifactId>
-									<version>${oiue.version}</version>
-									<type>jar</type>
-									<overWrite>true</overWrite>
-									<outputDirectory>${project.basedir}/bundle</outputDirectory>
-								</artifactItem>
-								<!--http://git.oschina.net/every.oschina.net/OIUE/blob/master/conf/org/oiue/service/sql/apache/Activator.config?dir=0&filepath=conf%2Forg%2Foiue%2Fservice%2Fsql%2Fapache%2FActivator.config&oid=837a39c8bad5e2da9a4b58565362b15241537692&sha=dde2dfae5c8b802e6d53f26186c2682eba29439b-->
-								<!--https://github.com/OIUE/OIUE/blob/master/conf/org/oiue/service/sql/apache/Activator.config-->
-								<artifactItem>
-									<groupId>${oiue.groupId}</groupId>
-									<artifactId>org.oiue.service.sql.apache</artifactId>
-									<version>${oiue.version}</version>
-									<type>jar</type>
-									<overWrite>true</overWrite>
-									<outputDirectory>${project.basedir}/bundle</outputDirectory>
-								</artifactItem>
-
-								<artifactItem>
-									<groupId>${felix.groupId}</groupId>
-									<artifactId>org.apache.felix.http.servlet-api</artifactId>
-									<version>${http.servlet.api.version}</version>
-									<type>jar</type>
-									<overWrite>true</overWrite>
-									<outputDirectory>${project.basedir}/bundle</outputDirectory>
-								</artifactItem>
-								<artifactItem>
-									<groupId>${felix.groupId}</groupId>
-									<artifactId>org.apache.felix.http.api</artifactId>
-									<version>${http.api.version}</version>
-									<type>jar</type>
-									<overWrite>true</overWrite>
-									<outputDirectory>${project.basedir}/bundle</outputDirectory>
-								</artifactItem>
-								<artifactItem>
-									<groupId>${felix.groupId}</groupId>
-									<artifactId>org.apache.felix.log</artifactId>
-									<version>${log.version}</version>
-									<type>jar</type>
-									<overWrite>true</overWrite>
-									<outputDirectory>${project.basedir}/bundle</outputDirectory>
-								</artifactItem>
-								<artifactItem>
-									<groupId>${felix.groupId}</groupId>
-									<artifactId>org.apache.felix.http.base</artifactId>
-									<version>${http.base.version}</version>
-									<type>jar</type>
-									<overWrite>true</overWrite>
-									<outputDirectory>${project.basedir}/bundle</outputDirectory>
-								</artifactItem>
-								<artifactItem>
-									<groupId>${felix.groupId}</groupId>
-									<artifactId>org.apache.felix.eventadmin</artifactId>
-									<version>${eventadmin.version}</version>
-									<type>jar</type>
-									<overWrite>true</overWrite>
-									<outputDirectory>${project.basedir}/bundle</outputDirectory>
-								</artifactItem>
-								<artifactItem>
-									<groupId>${felix.groupId}</groupId>
-									<artifactId>org.apache.felix.http.jetty</artifactId>
-									<version>${jetty.version}</version>
-									<type>jar</type>
-									<overWrite>true</overWrite>
-									<outputDirectory>${project.basedir}/bundle</outputDirectory>
-								</artifactItem>
-								
-								<artifactItem>
-									<groupId>${oiue.groupId}</groupId>
-									<artifactId>org.oiue.service.buffer</artifactId>
-									<version>${oiue.version}</version>
-									<type>jar</type>
-									<overWrite>true</overWrite>
-									<outputDirectory>${project.basedir}/bundle</outputDirectory>
-								</artifactItem>
-								<artifactItem>
-									<groupId>${oiue.groupId}</groupId>
-									<artifactId>org.oiue.service.buffer.impl</artifactId>
-									<version>${oiue.version}</version>
-									<type>jar</type>
-									<overWrite>true</overWrite>
-									<outputDirectory>${project.basedir}/bundle</outputDirectory>
-								</artifactItem>
-								<artifactItem>
-									<groupId>${oiue.groupId}</groupId>
-									<artifactId>org.oiue.service.cache</artifactId>
-									<version>${oiue.version}</version>
-									<type>jar</type>
-									<overWrite>true</overWrite>
-									<outputDirectory>${project.basedir}/bundle</outputDirectory>
-								</artifactItem>
-								<artifactItem>
-									<groupId>${oiue.groupId}</groupId>
-									<artifactId>org.oiue.service.cache.impl</artifactId>
-									<version>${oiue.version}</version>
-									<type>jar</type>
-									<overWrite>true</overWrite>
-									<outputDirectory>${project.basedir}/bundle</outputDirectory>
-								</artifactItem>
-								<artifactItem>
-									<groupId>${oiue.groupId}</groupId>
-									<artifactId>org.oiue.service.cache.jedis</artifactId>
-									<version>${oiue.version}</version>
-									<type>jar</type>
-									<overWrite>true</overWrite>
-									<outputDirectory>${project.basedir}/bundle</outputDirectory>
-								</artifactItem>
-								<artifactItem>
-									<groupId>${oiue.groupId}</groupId>
-									<artifactId>org.oiue.service.cache.script</artifactId>
-									<version>${oiue.version}</version>
-									<type>jar</type>
-									<overWrite>true</overWrite>
-									<outputDirectory>${project.basedir}/bundle</outputDirectory>
-								</artifactItem>
-								<artifactItem>
-									<groupId>${oiue.groupId}</groupId>
-									<artifactId>org.oiue.service.debug.cache</artifactId>
-									<version>${oiue.version}</version>
-									<type>jar</type>
-									<overWrite>true</overWrite>
-									<outputDirectory>${project.basedir}/bundle</outputDirectory>
-								</artifactItem>
-								<artifactItem>
-									<groupId>${oiue.groupId}</groupId>
-									<artifactId>org.oiue.service.cache.buffer</artifactId>
-									<version>${oiue.version}</version>
-									<type>jar</type>
-									<overWrite>true</overWrite>
-									<outputDirectory>${project.basedir}/bundle</outputDirectory>
-								</artifactItem>
-								
-								<artifactItem>
-									<groupId>${oiue.groupId}</groupId>
-									<artifactId>org.oiue.service.online</artifactId>
-									<version>${oiue.version}</version>
-									<type>jar</type>
-									<overWrite>true</overWrite>
-									<outputDirectory>${project.basedir}/bundle</outputDirectory>
-								</artifactItem>
-								<!--http://git.oschina.net/every.oschina.net/OIUE/blob/master/conf/org/oiue/service/odp/res/base/Activator.config?dir=0&filepath=conf%2Forg%2Foiue%2Fservice%2Fodp%2Fres%2Fbase%2FActivator.config&oid=758fe3ff79aaacfb040e969039304ef952df90c3&sha=dde2dfae5c8b802e6d53f26186c2682eba29439b-->
-								<!--https://github.com/OIUE/OIUE/blob/master/conf/org/oiue/service/online/impl/Activator.config-->
-								<artifactItem>
-									<groupId>${oiue.groupId}</groupId>
-									<artifactId>org.oiue.service.online.impl</artifactId>
-									<version>${oiue.version}</version>
-									<type>jar</type>
-									<overWrite>true</overWrite>
-									<outputDirectory>${project.basedir}/bundle</outputDirectory>
-								</artifactItem>
-								
-								<artifactItem>
-									<groupId>${oiue.groupId}.actions</groupId>
-									<artifactId>org.oiue.service.action.api</artifactId>
-									<version>${oiue.version}</version>
-									<type>jar</type>
-									<overWrite>true</overWrite>
-									<outputDirectory>${project.basedir}/bundle</outputDirectory>
-								</artifactItem>
-								<artifactItem>
-									<groupId>${oiue.groupId}</groupId>
-									<artifactId>org.oiue.service.permission</artifactId>
-									<version>${oiue.version}</version>
-									<type>jar</type>
-									<overWrite>true</overWrite>
-									<outputDirectory>${project.basedir}/bundle</outputDirectory>
-								</artifactItem>
-								<artifactItem>
-									<groupId>${oiue.groupId}</groupId>
-									<artifactId>org.oiue.service.auth</artifactId>
-									<version>${oiue.version}</version>
-									<type>jar</type>
-									<overWrite>true</overWrite>
-									<outputDirectory>${project.basedir}/bundle</outputDirectory>
-								</artifactItem>
-								
-								<artifactItem>
-									<groupId>${oiue.groupId}.actions</groupId>
-									<artifactId>org.oiue.service.action.base</artifactId>
-									<version>${oiue.version}</version>
-									<type>jar</type>
-									<overWrite>true</overWrite>
-									<outputDirectory>${project.basedir}/bundle</outputDirectory>
-								</artifactItem>
-								<artifactItem>
-									<groupId>${oiue.groupId}.actions</groupId>
-									<artifactId>org.oiue.service.action.filter.auth</artifactId>
-									<version>${oiue.version}</version>
-									<type>jar</type>
-									<overWrite>true</overWrite>
-									<outputDirectory>${project.basedir}/bundle</outputDirectory>
-								</artifactItem>
-								
-								<artifactItem>
-									<groupId>${oiue.groupId}</groupId>
-									<artifactId>org.oiue.service.permission.impl</artifactId>
-									<version>${oiue.version}</version>
-									<type>jar</type>
-									<overWrite>true</overWrite>
-									<outputDirectory>${project.basedir}/bundle</outputDirectory>
-								</artifactItem>
-								<artifactItem>
-									<groupId>${oiue.groupId}</groupId>
-									<artifactId>org.oiue.service.auth.impl</artifactId>
-									<version>${oiue.version}</version>
-									<type>jar</type>
-									<overWrite>true</overWrite>
-									<outputDirectory>${project.basedir}/bundle</outputDirectory>
-								</artifactItem>
-								
-								<artifactItem>
-									<groupId>${oiue.groupId}.odps</groupId>
-									<artifactId>org.oiue.service.odp.base</artifactId>
-									<version>${oiue.version}</version>
-									<type>jar</type>
-									<overWrite>true</overWrite>
-									<outputDirectory>${project.basedir}/bundle</outputDirectory>
-								</artifactItem>
-								<artifactItem>
-									<groupId>${oiue.groupId}.odps</groupId>
-									<artifactId>org.oiue.service.odp.dmo.h2</artifactId>
-									<version>${oiue.version}</version>
-									<type>jar</type>
-									<overWrite>true</overWrite>
-									<outputDirectory>${project.basedir}/bundle</outputDirectory>
-								</artifactItem>
-								<artifactItem>
-									<groupId>${oiue.groupId}.odps</groupId>
-									<artifactId>org.oiue.service.odp.dmo.mysql</artifactId>
-									<version>${oiue.version}</version>
-									<type>jar</type>
-									<overWrite>true</overWrite>
-									<outputDirectory>${project.basedir}/bundle</outputDirectory>
-								</artifactItem>
-								<artifactItem>
-									<groupId>${oiue.groupId}.odps</groupId>
-									<artifactId>org.oiue.service.odp.dmo.postgresql</artifactId>
-									<version>${oiue.version}</version>
-									<type>jar</type>
-									<overWrite>true</overWrite>
-									<outputDirectory>${project.basedir}/bundle</outputDirectory>
-								</artifactItem>
-								<artifactItem>
-									<groupId>${oiue.groupId}.odps</groupId>
-									<artifactId>org.oiue.service.odp.dmo.neo4j</artifactId>
-									<version>${oiue.version}</version>
-									<type>jar</type>
-									<overWrite>true</overWrite>
-									<outputDirectory>${project.basedir}/bundle</outputDirectory>
-								</artifactItem>
-								
-								<artifactItem>
-									<groupId>${oiue.groupId}.odps</groupId>
-									<artifactId>org.oiue.service.odp.res.dmo</artifactId>
-									<version>${oiue.version}</version>
-									<type>jar</type>
-									<overWrite>true</overWrite>
-									<outputDirectory>${project.basedir}/bundle</outputDirectory>
-								</artifactItem>
-								<artifactItem>
-									<groupId>${oiue.groupId}.odps</groupId>
-									<artifactId>org.oiue.service.odp.res.dmo.h2</artifactId>
-									<version>${oiue.version}</version>
-									<type>jar</type>
-									<overWrite>true</overWrite>
-									<outputDirectory>${project.basedir}/bundle</outputDirectory>
-								</artifactItem>
-								<artifactItem>
-									<groupId>${oiue.groupId}.odps</groupId>
-									<artifactId>org.oiue.service.odp.res.dmo.mysql</artifactId>
-									<version>${oiue.version}</version>
-									<type>jar</type>
-									<overWrite>true</overWrite>
-									<outputDirectory>${project.basedir}/bundle</outputDirectory>
-								</artifactItem>
-								<artifactItem>
-									<groupId>${oiue.groupId}.odps</groupId>
-									<artifactId>org.oiue.service.odp.res.dmo.neo4j</artifactId>
-									<version>${oiue.version}</version>
-									<type>jar</type>
-									<overWrite>true</overWrite>
-									<outputDirectory>${project.basedir}/bundle</outputDirectory>
-								</artifactItem>
-								<artifactItem>
-									<groupId>${oiue.groupId}.odps</groupId>
-									<artifactId>org.oiue.service.odp.res.api</artifactId>
-									<version>${oiue.version}</version>
-									<type>jar</type>
-									<overWrite>true</overWrite>
-									<outputDirectory>${project.basedir}/bundle</outputDirectory>
-								</artifactItem>
-								<artifactItem>
-									<groupId>${oiue.groupId}.odps.events</groupId>
-									<artifactId>org.oiue.service.odp.event.api</artifactId>
-									<version>${oiue.version}</version>
-									<type>jar</type>
-									<overWrite>true</overWrite>
-									<outputDirectory>${project.basedir}/bundle</outputDirectory>
-								</artifactItem>
-								
-								<artifactItem>
-									<groupId>${oiue.groupId}.odps.events</groupId>
-									<artifactId>org.oiue.service.odp.event.sql.structure</artifactId>
-									<version>${oiue.version}</version>
-									<type>jar</type>
-									<overWrite>true</overWrite>
-									<outputDirectory>${project.basedir}/bundle</outputDirectory>
-								</artifactItem>
-								<artifactItem>
-									<groupId>${oiue.groupId}.odps</groupId>
-									<artifactId>org.oiue.service.odp.structure</artifactId>
-									<version>${oiue.version}</version>
-									<type>jar</type>
-									<overWrite>true</overWrite>
-									<outputDirectory>${project.basedir}/bundle</outputDirectory>
-								</artifactItem>
-								<artifactItem>
-									<groupId>${oiue.groupId}.odps</groupId>
-									<artifactId>org.oiue.service.odp.structure.impl</artifactId>
-									<version>${oiue.version}</version>
-									<type>jar</type>
-									<overWrite>true</overWrite>
-									<outputDirectory>${project.basedir}/bundle</outputDirectory>
-								</artifactItem>
-								<artifactItem>
-									<groupId>${oiue.groupId}.odps</groupId>
-									<artifactId>org.oiue.service.odp.structure.selectsql</artifactId>
-									<version>${oiue.version}</version>
-									<type>jar</type>
-									<overWrite>true</overWrite>
-									<outputDirectory>${project.basedir}/bundle</outputDirectory>
-								</artifactItem>
-								<artifactItem>
-									<groupId>${oiue.groupId}.odps.events</groupId>
-									<artifactId>org.oiue.service.odp.event.sql.structure.impl</artifactId>
-									<version>${oiue.version}</version>
-									<type>jar</type>
-									<overWrite>true</overWrite>
-									<outputDirectory>${project.basedir}/bundle</outputDirectory>
-								</artifactItem>
-								<artifactItem>
-									<groupId>${oiue.groupId}.odps.events</groupId>
-									<artifactId>org.oiue.service.odp.event.dmo.mysql</artifactId>
-									<version>${oiue.version}</version>
-									<type>jar</type>
-									<overWrite>true</overWrite>
-									<outputDirectory>${project.basedir}/bundle</outputDirectory>
-								</artifactItem>
-								<artifactItem>
-									<groupId>${oiue.groupId}.odps.events</groupId>
-									<artifactId>org.oiue.service.odp.event.dmo.mysql.q</artifactId>
-									<version>${oiue.version}</version>
-									<type>jar</type>
-									<overWrite>true</overWrite>
-									<outputDirectory>${project.basedir}/bundle</outputDirectory>
-								</artifactItem>
-								<artifactItem>
-									<groupId>${oiue.groupId}.odps.events</groupId>
-									<artifactId>org.oiue.service.odp.event.dmo.mysql.t</artifactId>
-									<version>${oiue.version}</version>
-									<type>jar</type>
-									<overWrite>true</overWrite>
-									<outputDirectory>${project.basedir}/bundle</outputDirectory>
-								</artifactItem>
-								<artifactItem>
-									<groupId>${oiue.groupId}.odps.events</groupId>
-									<artifactId>org.oiue.service.odp.event.dmo.mysql.select</artifactId>
-									<version>${oiue.version}</version>
-									<type>jar</type>
-									<overWrite>true</overWrite>
-									<outputDirectory>${project.basedir}/bundle</outputDirectory>
-								</artifactItem>
-								<artifactItem>
-									<groupId>${oiue.groupId}.odps.events</groupId>
-									<artifactId>org.oiue.service.odp.event.dmo.mysql.selects</artifactId>
-									<version>${oiue.version}</version>
-									<type>jar</type>
-									<overWrite>true</overWrite>
-									<outputDirectory>${project.basedir}/bundle</outputDirectory>
-								</artifactItem>
-								<artifactItem>
-									<groupId>${oiue.groupId}.odps.events</groupId>
-									<artifactId>org.oiue.service.odp.event.dmo.postgresql</artifactId>
-									<version>${oiue.version}</version>
-									<type>jar</type>
-									<overWrite>true</overWrite>
-									<outputDirectory>${project.basedir}/bundle</outputDirectory>
-								</artifactItem>
-								<artifactItem>
-									<groupId>${oiue.groupId}.odps.events</groupId>
-									<artifactId>org.oiue.service.odp.event.dmo.postgresql.q</artifactId>
-									<version>${oiue.version}</version>
-									<type>jar</type>
-									<overWrite>true</overWrite>
-									<outputDirectory>${project.basedir}/bundle</outputDirectory>
-								</artifactItem>
-								<artifactItem>
-									<groupId>${oiue.groupId}.odps.events</groupId>
-									<artifactId>org.oiue.service.odp.event.dmo.postgresql.query</artifactId>
-									<version>${oiue.version}</version>
-									<type>jar</type>
-									<overWrite>true</overWrite>
-									<outputDirectory>${project.basedir}/bundle</outputDirectory>
-								</artifactItem>
-								<artifactItem>
-									<groupId>${oiue.groupId}.odps.events</groupId>
-									<artifactId>org.oiue.service.odp.event.dmo.postgresql.selects</artifactId>
-									<version>${oiue.version}</version>
-									<type>jar</type>
-									<overWrite>true</overWrite>
-									<outputDirectory>${project.basedir}/bundle</outputDirectory>
-								</artifactItem>
-								<artifactItem>
-									<groupId>${oiue.groupId}.odps.events</groupId>
-									<artifactId>org.oiue.service.odp.event.dmo.neo4j</artifactId>
-									<version>${oiue.version}</version>
-									<type>jar</type>
-									<overWrite>true</overWrite>
-									<outputDirectory>${project.basedir}/bundle</outputDirectory>
-								</artifactItem>
-								<artifactItem>
-									<groupId>${oiue.groupId}.odps.events</groupId>
-									<artifactId>org.oiue.service.odp.event.dmo.neo4j.insert</artifactId>
-									<version>${oiue.version}</version>
-									<type>jar</type>
-									<overWrite>true</overWrite>
-									<outputDirectory>${project.basedir}/bundle</outputDirectory>
-								</artifactItem>
-								
-								<artifactItem>
-									<groupId>${oiue.groupId}.odps</groupId>
-									<artifactId>org.oiue.service.odp.res.base</artifactId>
-									<version>${oiue.version}</version>
-									<type>jar</type>
-									<overWrite>true</overWrite>
-									<outputDirectory>${project.basedir}/bundle</outputDirectory>
-								</artifactItem>
-								<artifactItem>
-									<groupId>${oiue.groupId}</groupId>
-									<artifactId>org.oiue.service.permission.verify</artifactId>
-									<version>${oiue.version}</version>
-									<type>jar</type>
-									<overWrite>true</overWrite>
-									<outputDirectory>${project.basedir}/bundle</outputDirectory>
-								</artifactItem>
-								<artifactItem>
-									<groupId>${oiue.groupId}</groupId>
-									<artifactId>org.oiue.service.auth.local</artifactId>
-									<version>${oiue.version}</version>
-									<type>jar</type>
-									<overWrite>true</overWrite>
-									<outputDirectory>${project.basedir}/bundle</outputDirectory>
-								</artifactItem>
-								<artifactItem>
-									<groupId>${oiue.groupId}.actions</groupId>
-									<artifactId>org.oiue.service.action.http.services</artifactId>
-									<version>${oiue.version}</version>
-									<type>jar</type>
-									<overWrite>true</overWrite>
-									<outputDirectory>${project.basedir}/bundle</outputDirectory>
-								</artifactItem>
-								<artifactItem>
-									<groupId>${oiue.groupId}.actions</groupId>
-									<artifactId>org.oiue.service.action.http.upload</artifactId>
-									<version>${oiue.version}</version>
-									<type>jar</type>
-									<overWrite>true</overWrite>
-									<outputDirectory>${project.basedir}/bundle</outputDirectory>
-								</artifactItem>
-								<artifactItem>
-									<groupId>${oiue.groupId}.actions</groupId>
-									<artifactId>org.oiue.service.action.tcp.action</artifactId>
-									<version>${oiue.version}</version>
-									<type>jar</type>
-									<overWrite>true</overWrite>
-									<outputDirectory>${project.basedir}/bundle</outputDirectory>
-								</artifactItem>
-								<artifactItem>
-									<groupId>${oiue.groupId}</groupId>
-									<artifactId>org.oiue.service.file.upload</artifactId>
-									<version>${oiue.version}</version>
-									<type>jar</type>
-									<overWrite>true</overWrite>
-									<outputDirectory>${project.basedir}/bundle</outputDirectory>
-								</artifactItem>
-								<artifactItem>
-									<groupId>${oiue.groupId}</groupId>
-									<artifactId>org.oiue.service.file.upload.impl</artifactId>
-									<version>${oiue.version}</version>
-									<type>jar</type>
-									<overWrite>true</overWrite>
-									<outputDirectory>${project.basedir}/bundle</outputDirectory>
-								</artifactItem>
-								<artifactItem>
-									<groupId>${oiue.groupId}</groupId>
-									<artifactId>org.oiue.service.task</artifactId>
-									<version>${oiue.version}</version>
-									<type>jar</type>
-									<overWrite>true</overWrite>
-									<outputDirectory>${project.basedir}/bundle</outputDirectory>
-								</artifactItem>
-								<artifactItem>
-									<groupId>${oiue.groupId}</groupId>
-									<artifactId>org.oiue.service.task.quartz</artifactId>
-									<version>${oiue.version}</version>
-									<type>jar</type>
-									<overWrite>true</overWrite>
-									<outputDirectory>${project.basedir}/bundle</outputDirectory>
-								</artifactItem>
-								<artifactItem>
-									<groupId>${oiue.groupId}</groupId>
-									<artifactId>org.oiue.service.buffer.synchronization.db</artifactId>
-									<version>${oiue.version}</version>
-									<type>jar</type>
-									<overWrite>true</overWrite>
-									<outputDirectory>${project.basedir}/bundle</outputDirectory>
-								</artifactItem>
-								<artifactItem>
-									<groupId>${oiue.groupId}</groupId>
-									<artifactId>org.oiue.service.tcp</artifactId>
-									<version>${oiue.version}</version>
-									<type>jar</type>
-									<overWrite>true</overWrite>
-									<outputDirectory>${project.basedir}/bundle</outputDirectory>
-								</artifactItem>
-								<artifactItem>
-									<groupId>${oiue.groupId}</groupId>
-									<artifactId>org.oiue.service.tcp.mina</artifactId>
-									<version>${oiue.version}</version>
-									<type>jar</type>
-									<overWrite>true</overWrite>
-									<outputDirectory>${project.basedir}/bundle</outputDirectory>
-								</artifactItem>
-
-							</artifactItems>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
-		</plugins>
-	</build>
-</project>
-```
-
+#现有服务通信协议约定
 # HTTP/TCP/UDP字符流请求/响应格式规范定义
 
 服务平台开放式服务接收客户端采用TCP、HTTP等方式调用。本章节规范并定义本平台开放式服务的标准请求/响应格式，并为非开放式服务及特定业务服务提供协议参考。
@@ -1208,6 +672,125 @@ B/S获取订阅消息指令格式如下：
 **operation**标识为query查询订阅消息
 **tag**标识为获取指定订阅通道号的信息，需与上述订阅一致
 
+
+#相关开源库
+
+**开源库及服务说明如下：**
+
+开源库名称|描述
+---|---
+OIUE主工程（服务启动容器felix）|https://github.com/OIUE/OIUE
+OIUE基于OSGI打包配置|https://github.com/OIUE/OIUE-CONFIGURATOR
+OIUE核心服务（容器隔离及核心服务定义）|https://github.com/OIUE/OIUE-CORE
+OIUE核心服务实现|https://github.com/OIUE/OIUE-BASE
+OIUE基于jdbc事物封装|https://github.com/OIUE/OIUE-ODPS
+OIUE开放服务|https://github.com/OIUE/OIUE-SERVICES
+
+以下服务均可在maven中央库及 https://mvnrepository.com 找到
+
+#相关服务
+
+服务名称|纯接口|bundle
+---|---|---
+工具包|N|org.oiue.tools-1.0.0.jar
+启动容器隔离封装服务（基于OSGI）|N|org.oiue.service.osgi.rpc-1.0.0.jar
+Action服务定义|Y|org.oiue.service.action.api-1.0.0.jar
+Action调度服务实现|N|org.oiue.service.action.base-1.0.0.jar
+ActionFilter认证服务|N|org.oiue.service.action.filter.auth-1.0.0.jar
+免登陆调试服务|N|org.oiue.service.action.filter.auth.debug-1.0.0.jar
+Action服务HTTP方式访问实现OLD|N|org.oiue.service.action.http.action-1.0.0.jar
+HTTP图片验证码服务|N|org.oiue.service.action.http.imageCode-1.0.0.jar
+Action服务HTTp方式访问实现NEW|N|org.oiue.service.action.http.services-1.0.0.jar
+HTTP文件上传服务|N|org.oiue.service.action.http.upload-1.0.0.jar
+Action服务TCP方式JSON访问实现|N|org.oiue.service.action.tcp.action-1.0.0.jar
+Action服务TCP方式流访问实现|N|org.oiue.service.action.tcp.bytes-1.0.0.jar
+认证服务定义|Y|org.oiue.service.auth-1.0.0.jar
+认证调度服务实现|N|org.oiue.service.auth.impl-1.0.0.jar
+本地认证服务实现(直接查jdbc库)|N|org.oiue.service.auth.local-1.0.0.jar
+自定义缓存定义|Y|org.oiue.service.buffer-1.0.0.jar
+自定义缓存实现|N|org.oiue.service.buffer.impl-1.0.0.jar
+自定义缓存同步服务|N|org.oiue.service.buffer.synchronization.db-1.0.0.jar
+流数据编解码处理服务定义|Y|org.oiue.service.bytes.api-1.0.0.jar
+流数据编解码调度处理服务实现|N|org.oiue.service.bytes.base-1.0.0.jar
+数据流编解码|N|org.oiue.service.bytes.bytes-1.0.0.jar
+整形数据编解码|N|org.oiue.service.bytes.int16-1.0.0.jar
+字符串编解码|N|org.oiue.service.bytes.string-1.0.0.jar
+缓存服务定义|Y|org.oiue.service.cache-1.0.0.jar
+自定义缓存实现|N|org.oiue.service.cache.buffer-1.0.0.jar
+缓存调度实现|N|org.oiue.service.cache.impl-1.0.0.jar
+混存redis封装|N|org.oiue.service.cache.jedis-1.0.0.jar
+混存脚本操作|N|org.oiue.service.cache.script-1.0.0.jar
+树状结构缓存定义|Y|org.oiue.service.cache.tree-1.0.0.jar
+树状缓存脚本操作|N|org.oiue.service.cache.tree.script-1.0.0.jar
+树状缓存zookeeper封装|N|org.oiue.service.cache.tree.zookeeper.curator-1.0.0.jar
+缓存调试服务|N|org.oiue.service.debug.cache-1.0.0.jar
+Http客户端调试服务|N|org.oiue.service.debug.httpclient-1.0.0.jar
+资源操作调试服务|N|org.oiue.service.debug.res-1.0.0.jar
+树状缓存调试服务|N|org.oiue.service.debug.treecache-1.0.0.jar
+数据接入总线服务定义|Y|org.oiue.service.driver.api-1.0.0.jar
+数据接入总线调度实现|N|org.oiue.service.driver.base-1.0.0.jar
+数据总线过滤实现|N|org.oiue.service.driver.filter.impl-1.0.0.jar
+数据总线订阅实现|N|org.oiue.service.driver.listener.impl-1.0.0.jar
+数据总线存储实现|N|org.oiue.service.driver.listener.storage-1.0.0.jar
+事件执行服务定义|Y|org.oiue.service.event.execute-1.0.0.jar
+事件执行服务实现|N|org.oiue.service.event.execute.impl-1.0.0.jar
+获取系统时间事件定义|Y|org.oiue.service.event.system.time-1.0.0.jar
+获取系统时间事件实现|N|org.oiue.service.event.system.time.impl-1.0.0.jar
+文件上传服务定义|Y|org.oiue.service.file.upload-1.0.0.jar
+文件上传服务实现|N|org.oiue.service.file.upload.impl-1.0.0.jar
+HTTP客户端服务定义|Y|org.oiue.service.http.client-1.0.0.jar
+apacheHttp客户端封装|N|org.oiue.service.http.client.apache-1.0.0.jar
+日志服务定义|Y|org.oiue.service.log-1.0.0.jar
+日志Log4j封装|N|org.oiue.service.log4j-1.0.0.jar
+消息服务定义|Y|org.oiue.service.message-1.0.0.jar
+消息服务实现|N|org.oiue.service.message.impl-1.0.0.jar
+JDBC事务基础服务|N|org.oiue.service.odp.base-1.0.0.jar
+H2持久层底层公共方法定义|N|org.oiue.service.odp.dmo.h2-1.0.0.jar
+Mysql持久层底层公共方法定义|N|org.oiue.service.odp.dmo.mysql-1.0.0.jar
+Neo4j持久层底层公共方法定义|N|org.oiue.service.odp.dmo.neo4j-1.0.0.jar
+Postgresql持久层底层公共方法定义|N|org.oiue.service.odp.dmo.postgresql-1.0.0.jar
+数据操作事件定义|Y|org.oiue.service.odp.event.api-1.0.0.jar
+数据操作事件Mysql实现|N|org.oiue.service.odp.event.dmo.mysql-1.0.0.jar
+数据操作事件Mysql查询实现|N|org.oiue.service.odp.event.dmo.mysql.q-1.0.0.jar
+数据操作事件Mysql单条查询实现|N|org.oiue.service.odp.event.dmo.mysql.select-1.0.0.jar
+数据操作事件Mysql多条查询实现|N|org.oiue.service.odp.event.dmo.mysql.selects-1.0.0.jar
+数据操作事件Mysql查询事件转换实现|N|org.oiue.service.odp.event.dmo.mysql.t-1.0.0.jar
+数据操作事件Neo4j实现|N|org.oiue.service.odp.event.dmo.neo4j-1.0.0.jar
+数据操作事件Neo4j插入实现|N|org.oiue.service.odp.event.dmo.neo4j.insert-1.0.0.jar
+数据操作事件Postgresql实现|N|org.oiue.service.odp.event.dmo.postgresql-1.0.0.jar
+数据操作事件Postgresql查询实现|N|org.oiue.service.odp.event.dmo.postgresql.q-1.0.0.jar
+数据操作事件Postgresql查询实现|N|org.oiue.service.odp.event.dmo.postgresql.query-1.0.0.jar
+数据操作事件Postgresql查询实现|N|org.oiue.service.odp.event.dmo.postgresql.selects-1.0.0.jar
+事件sql处理定义|Y|org.oiue.service.odp.event.sql.structure-1.0.0.jar
+事件sql处理实现|N|org.oiue.service.odp.event.sql.structure.impl-1.0.0.jar
+资源操作服务定义|Y|org.oiue.service.odp.res.api-1.0.0.jar
+资源操作服务业务实现|N|org.oiue.service.odp.res.base-1.0.0.jar
+资源操作持久层定义|Y|org.oiue.service.odp.res.dmo-1.0.0.jar
+H2资源操作持久层实现|N|org.oiue.service.odp.res.dmo.h2-1.0.0.jar
+Mysql资源操作持久层实现|N|org.oiue.service.odp.res.dmo.mysql-1.0.0.jar
+Neo4j资源操作持久层实现|N|org.oiue.service.odp.res.dmo.neo4j-1.0.0.jar
+sql处理定义|Y|org.oiue.service.odp.structure-1.0.0.jar
+sql处理实现|N|org.oiue.service.odp.structure.impl-1.0.0.jar
+查询sql处理实现|N|org.oiue.service.odp.structure.selectsql-1.0.0.jar
+在线维护服务定义|Y|org.oiue.service.online-1.0.0.jar
+在线维护服务实现|N|org.oiue.service.online.impl-1.0.0.jar
+权限校验服务定义|Y|org.oiue.service.permission-1.0.0.jar
+权限校验调度服务实现|N|org.oiue.service.permission.impl-1.0.0.jar
+访问鉴权及转换服务|N|org.oiue.service.permission.verify-1.0.0.jar
+JDBC连接池定义|Y|org.oiue.service.sql-1.0.0.jar
+Apache的JDBC连接池封装|N|org.oiue.service.sql.apache-1.0.0.jar
+系统分析服务定义|Y|org.oiue.service.system.analyzer-1.0.0.jar
+系统分析服务实现|N|org.oiue.service.system.analyzer.impl-1.0.0.jar
+定时任务调度服务定义|Y|org.oiue.service.task-1.0.0.jar
+定时任务调度|N|org.oiue.service.task.quartz-1.0.0.jar
+TCP/UDP服务定义|Y|org.oiue.service.tcp-1.0.0.jar
+Mina封装|N|org.oiue.service.tcp.mina-1.0.0.jar
+模板定义|Y|org.oiue.service.template.api-1.0.0.jar
+模板管理服务实现|N|org.oiue.service.template.base-1.0.0.jar
+beetl封装|N|org.oiue.service.template.beetl-1.0.0.jar
+velocity封装|N|org.oiue.service.template.velocity-1.0.0.jar
+线程池定义|Y|org.oiue.service.threadpool-1.0.0.jar
+线程池实现|N|org.oiue.service.threadpool.impl-1.0.0.jar
 
 [more](http://www.oiue.org)
 

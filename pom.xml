@@ -20,7 +20,7 @@
 	<developers>
 		<developer>
 			<name>Every</name>
-			<email>mwgjkf@139.com</email>
+			<email>team@oiue.org</email>
 		</developer>
 	</developers>
 
@@ -32,7 +32,7 @@
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<project.build.exportdir>/workspace/git/platform/leauto/bundle</project.build.exportdir>
+		<project.build.exportdir>/workspace/git/massplat/bundle</project.build.exportdir>
 	</properties>
 	<modules>
 		<module>interface</module>
