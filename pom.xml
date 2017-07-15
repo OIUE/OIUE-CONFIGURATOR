@@ -8,7 +8,7 @@
 
 	<groupId>org.oiue</groupId>
 	<artifactId>oiue</artifactId>
-	<version>1.0.0</version>
+	<version>1.0.1</version>
 	<packaging>pom</packaging>
 
 	<licenses>
@@ -32,12 +32,124 @@
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<project.build.exportdir>/workspace/git/massplat/bundle</project.build.exportdir>
+		<project.build.exportdir>/work/github/main/bundle</project.build.exportdir>
+		<oiue.groupId>org.oiue.services</oiue.groupId>
+		<org.oiue.version>${version}</org.oiue.version>
+		<org.oiue.services.version>${version}</org.oiue.services.version>
+		<action.api.version>${version}</action.api.version>
+		<action.base.version>${version}</action.base.version>
+		<action.filter.auth.version>${version}</action.filter.auth.version>
+		<action.filter.auth.debug.version>${version}</action.filter.auth.debug.version>
+		<action.filter.module2domain.version>${version}</action.filter.module2domain.version>
+		<action.http.action.version>${version}</action.http.action.version>
+		<action.http.filter.auth.version>${version}</action.http.filter.auth.version>
+		<action.http.imageCode.version>${version}</action.http.imageCode.version>
+		<action.http.resource.version>${version}</action.http.resource.version>
+		<action.http.services.version>${version}</action.http.services.version>
+		<action.http.upload.version>${version}</action.http.upload.version>
+		<action.tcp.action.version>${version}</action.tcp.action.version>
+		<action.tcp.bytes.version>${version}</action.tcp.bytes.version>
+		<auth.version>${version}</auth.version>
+		<auth.impl.version>${version}</auth.impl.version>
+		<auth.local.version>${version}</auth.local.version>
+		<buffer.version>${version}</buffer.version>
+		<buffer.impl.version>${version}</buffer.impl.version>
+		<buffer.sync.db.refresh.version>${version}</buffer.sync.db.refresh.version>
+		<buffer.synchronization.db.version>${version}</buffer.synchronization.db.version>
+		<bytes.api.version>${version}</bytes.api.version>
+		<bytes.base.version>${version}</bytes.base.version>
+		<bytes.bytes.version>${version}</bytes.bytes.version>
+		<bytes.int16.version>${version}</bytes.int16.version>
+		<bytes.string.version>${version}</bytes.string.version>
+		<cache.version>${version}</cache.version>
+		<cache.buffer.version>${version}</cache.buffer.version>
+		<cache.impl.version>${version}</cache.impl.version>
+		<cache.jedis.version>${version}</cache.jedis.version>
+		<cache.script.version>${version}</cache.script.version>
+		<cache.tree.version>${version}</cache.tree.version>
+		<cache.tree.script.version>${version}</cache.tree.script.version>
+		<cache.tree.zookeeper.curator.version>${version}</cache.tree.zookeeper.curator.version>
+		<debug.cache.version>${version}</debug.cache.version>
+		<debug.httpclient.version>${version}</debug.httpclient.version>
+		<debug.insertmodule.version>${version}</debug.insertmodule.version>
+		<debug.res.version>${version}</debug.res.version>
+		<debug.treecache.version>${version}</debug.treecache.version>
+		<driver.api.version>${version}</driver.api.version>
+		<driver.base.version>${version}</driver.base.version>
+		<driver.filter.impl.version>${version}</driver.filter.impl.version>
+		<driver.listener.impl.version>${version}</driver.listener.impl.version>
+		<driver.listener.storage.version>${version}</driver.listener.storage.version>
+		<event.execute.version>${version}</event.execute.version>
+		<event.execute.impl.version>${version}</event.execute.impl.version>
+		<event.system.time.version>${version}</event.system.time.version>
+		<event.system.time.impl.version>${version}</event.system.time.impl.version>
+		<file.upload.version>${version}</file.upload.version>
+		<file.upload.impl.version>${version}</file.upload.impl.version>
+		<http.client.version>${version}</http.client.version>
+		<http.client.apache.version>${version}</http.client.apache.version>
+		<log.version>${version}</log.version>
+		<log4j.version>${version}</log4j.version>
+		<message.version>${version}</message.version>
+		<message.impl.version>${version}</message.impl.version>
+		<odp.base.version>${version}</odp.base.version>
+		<odp.dmo.h2.version>${version}</odp.dmo.h2.version>
+		<odp.dmo.mysql.version>${version}</odp.dmo.mysql.version>
+		<odp.dmo.neo4j.version>${version}</odp.dmo.neo4j.version>
+		<odp.dmo.postgresql.version>${version}</odp.dmo.postgresql.version>
+		<odp.event.api.version>${version}</odp.event.api.version>
+		<odp.event.dmo.mysql.version>${version}</odp.event.dmo.mysql.version>
+		<odp.event.dmo.mysql.call.version>${version}</odp.event.dmo.mysql.call.version>
+		<odp.event.dmo.mysql.q.version>${version}</odp.event.dmo.mysql.q.version>
+		<odp.event.dmo.mysql.select.version>${version}</odp.event.dmo.mysql.select.version>
+		<odp.event.dmo.mysql.selects.version>${version}</odp.event.dmo.mysql.selects.version>
+		<odp.event.dmo.mysql.selectsTree.version>${version}</odp.event.dmo.mysql.selectsTree.version>
+		<odp.event.dmo.mysql.t.version>${version}</odp.event.dmo.mysql.t.version>
+		<odp.event.dmo.neo4j.version>${version}</odp.event.dmo.neo4j.version>
+		<odp.event.dmo.neo4j.insert.version>${version}</odp.event.dmo.neo4j.insert.version>
+		<odp.event.dmo.postgresql.version>${version}</odp.event.dmo.postgresql.version>
+		<odp.event.dmo.postgresql.q.version>${version}</odp.event.dmo.postgresql.q.version>
+		<odp.event.dmo.postgresql.query.version>${version}</odp.event.dmo.postgresql.query.version>
+		<odp.event.dmo.postgresql.select.version>${version}</odp.event.dmo.postgresql.select.version>
+		<odp.event.dmo.postgresql.selects.version>${version}</odp.event.dmo.postgresql.selects.version>
+		<odp.event.sql.structure.version>${version}</odp.event.sql.structure.version>
+		<odp.event.sql.structure.impl.version>${version}</odp.event.sql.structure.impl.version>
+		<odp.res.api.version>${version}</odp.res.api.version>
+		<odp.res.base.version>${version}</odp.res.base.version>
+		<odp.res.dmo.version>${version}</odp.res.dmo.version>
+		<odp.res.dmo.h2.version>${version}</odp.res.dmo.h2.version>
+		<odp.res.dmo.mysql.version>${version}</odp.res.dmo.mysql.version>
+		<odp.res.dmo.neo4j.version>${version}</odp.res.dmo.neo4j.version>
+		<odp.res.dmo.postgresql.version>${version}</odp.res.dmo.postgresql.version>
+		<odp.res.event.resultfilter.convert2tree.version>${version}</odp.res.event.resultfilter.convert2tree.version>
+		<odp.structure.version>${version}</odp.structure.version>
+		<odp.structure.impl.version>${version}</odp.structure.impl.version>
+		<odp.structure.selectsql.version>${version}</odp.structure.selectsql.version>
+		<online.version>${version}</online.version>
+		<online.impl.version>${version}</online.impl.version>
+		<osgi.rpc.version>${version}</osgi.rpc.version>
+		<permission.version>${version}</permission.version>
+		<permission.impl.version>${version}</permission.impl.version>
+		<permission.verify.version>${version}</permission.verify.version>
+		<socketio.version>${version}</socketio.version>
+		<sql.version>${version}</sql.version>
+		<sql.apache.version>${version}</sql.apache.version>
+		<system.analyzer.version>${version}</system.analyzer.version>
+		<system.analyzer.impl.version>${version}</system.analyzer.impl.version>
+		<task.version>${version}</task.version>
+		<task.quartz.version>${version}</task.quartz.version>
+		<tcp.version>${version}</tcp.version>
+		<tcp.mina.version>${version}</tcp.mina.version>
+		<template.action.version>${version}</template.action.version>
+		<template.api.version>${version}</template.api.version>
+		<template.base.version>${version}</template.base.version>
+		<template.beetl.version>${version}</template.beetl.version>
+		<template.velocity.version>${version}</template.velocity.version>
+		<threadpool.version>${version}</threadpool.version>
+		<threadpool.impl.version>${version}</threadpool.impl.version>
+		<tools.version>${version}</tools.version>
 	</properties>
 	<modules>
 		<module>interface</module>
-		<module>import</module>
-		<module>parent</module>
 	</modules>
 
 	<profiles>

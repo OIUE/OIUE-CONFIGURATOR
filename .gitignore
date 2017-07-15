@@ -1,0 +1,11 @@
+.classpath
+.project
+/target/
+/bundle/
+/felix-cache/
+/logs/
+/conf/org_apache_felix_cm_impl_DynamicBindings.config
+/conf/org/oiue/service/sql/apache/Activator.config
+/conf/org/oiue/service/cache/jedis/Activator.config
+/conf/org/oiue/service/cache/tree/zookeeper/curator/Activator.config
+/lib/

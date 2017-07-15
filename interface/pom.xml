@@ -4,11 +4,10 @@
 	<parent>
 		<groupId>org.oiue</groupId>
 		<artifactId>oiue</artifactId>
-		<version>1.0.0</version>
+		<version>1.0.1</version>
 	</parent>
 	<groupId>org.oiue.services</groupId>
 	<artifactId>interfaces</artifactId>
-	<version>1.0.0</version>
 	
 	<name>OIUE interfaces </name>
 	<description>OIUE service for interfaces </description>
@@ -45,6 +44,7 @@
 						<Bundle-Name>${project.name}</Bundle-Name>
 						<Bundle-ManifestVersion>2</Bundle-ManifestVersion>
 						<Bundle-Description>${project.description}</Bundle-Description>
+						<Import-Package>${project.import}</Import-Package>
 						<Bundle-Vendor></Bundle-Vendor>
 					</instructions>
 				</configuration>
